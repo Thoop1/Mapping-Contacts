@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Contact</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <style>
+        div.space {
+            padding-bottom: 20px;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+
+        div.border {
+            border: 1px solid black;
+        }
+        body{
+            background-color: linen;
+        }
+
+    </style>
+</head>
+<body>
+    <form action = "updated" method = "post" name="myForm">
+        <div class="border">
+            <div class="space">
+                <input type="radio" name="title" id="mr" value="mr">Mr.
+                <input type="radio" name="title" id="mrs" value="mrs">Mrs.
+                <input type="radio" name="title" id="mr" value="ms">Ms.
+                <input type="radio" name="title" id="dr" value="dr">Dr.
+                <br>
+                <% if(contact.title == "mr") { %>
+                    <script>
+                        $("#mr").prop("checked", true);
+                    </script>
+                <% } else if(contact.title == "mrs") { %>
+                    <script>
+                        $("#mrs").prop("checked", true);
+                    </script>
+                <% } else if(contact.title == "ms") { %>
+                    <script>
+                        $("#ms").prop("checked", true);
+                    </script>
+                <% } else if(contact.title == "dr") { %>
+                    <script>
+                        $("#dr").prop("checked", true);
+                    </script>
+                <% } %>
+            </div>
+            <div class="space">
+                <label for="firstName">First Name: </label>
+                <input type="text" name="firstName" value="<%= contact.firstName %>" required autofocus/>
+            
+                <label for="lastName">Last Name:  </label>
+                <input type="text" name="lastName" value="<%= contact.lastName %>" required/>
+            </div>
+            
+            <div class="space">
+                <label for="street">Street:  </label>
+                <input type="text" name="street" value="<%= contact.street %>" />
+            
+                <label for="city">City:  </label>
+                <input type="text" name="city" value="<%= contact.city %>" />
+            </div>
+            
+            <div class="space">
+                <label for="states">State:  </label>
+                <select name="states">
+                    <option value="NJ" id="nj">NJ</option>
+                    <option value="NY" id="ny">NY</option>
+                    <option value="PA" id="pa">PA</option>
+                    <option value="CT" id="ct">CT</option>
+                </select>
+
+                <% if(contact.states == "NJ") { %>
+                    <script>
+                        $("#nj").prop("selected", true);
+                    </script>
+                <% } else if(contact.states == "NY") { %>
+                    <script>
+                        $("#ny").prop("selected", true);
+                    </script>
+                <% } else if(contact.states == "PA") { %>
+                    <script>
+                        $("#pa").prop("selected", true);
+                    </script>
+                <% } else if(contact.states == "CT") { %>
+                    <script>
+                        $("#ct").prop("selected", true);
+                    </script>
+                <% } %>
+
+                
+                <label for="zip">Zip:  </label>
+                <input type="text" name="zip" value="<%= contact.zip %>" />
+            </div>
+            
+            <div class="space">
+                <label for="phone">Phone:  </label>
+                <input type="text" name="phone" value="<%= contact.phone %>"/>
+            </div>
+            
+            <div class="space">
+                <label for="email">Email:  </label>
+                <input type="text" name="email" value="<%= contact.email %>"/>
+            </div>
+            
+            <div class="space">
+                <label for="contact">How may we contact you?  </label>
+                <input type="checkbox" name="checkPhone" id="checkPhone">Phone
+                <input type="checkbox" name="checkMail" id="checkMail">Mail
+                <input type="checkbox" name="checkEmail" id="checkEmail">Email
+                <input type="checkbox" name="checkAny" id="checkAny">Any
+                <% if(contact.mail == "Yes" && contact.email.length > 0 && contact.phone.length > 0) { %>
+                    <script>
+                        $("#checkAny").prop("checked", true);
+                    </script>
+                <% } else { %>
+                    <% if(contact.mail == "Yes") { %>
+                        <script>
+                            $("#checkMail").prop("checked", true);
+                        </script>
+                    <% } %>
+                    <% if(contact.email.length > 0) { %>
+                        <script>
+                            $("#checkEmail").prop("checked", true);
+                        </script>
+                    <% } %>
+                    <% if(contact.phone.length > 0) { %>
+                        <script>
+                            $("#checkPhone").prop("checked", true);
+                        </script>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+        <input type="hidden" id="contactId" name="contactId" value="<%= contact._id %>" />
+        <button type="submit" class="btn" style="margin-top: 20px;">Save</button>
+    </form>
+    <!--<a href="contacts">Contact List</a>-->
+</body>
+</html>

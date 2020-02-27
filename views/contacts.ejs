@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact List</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css"></link>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <style type="text/css">
+        table, th, td {
+            border: 3px solid navy;
+        }
+
+        #map { 
+            height: 600px;
+            width: 600px;
+            margin-top: 50px;
+        }
+        .deleteButton {
+            margin-left: 1px;
+        }
+        body{
+            background-color: linen;
+        }
+        
+    </style>
+</head>
+
+
+<body> 
+    <div class="container">
+    <div class="page-header">
+        <h1>Table Of Contacts</h1>
+        <form action = "start" method = "post">
+            <button type="submit" class="btn btn-primary">Log Out</button>
+        </form>
+    </div>
+    
+    <table id="contactTable" style="width:90%">
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Mail</th>
+            <th>Delete</th>
+            <th></th>
+            <th>Update</th>
+            <th></th>
+        </tr>
+        <% contactList.forEach(function(contact) { %>
+            <tr class="con">
+                <td id="name" align="center"><%= contact.name %></td>
+                <td id="add" class="address" align="center"><%= contact.address %></td>
+                <td id="email" align="center"><%= contact.email %></td>
+                <td id="phone" align="center"><%= contact.phone %></td>
+                <td id="mail" align="center"><%= contact.mail %></td>
+                <form action="delete" method="post">
+                    <td><button class="btn" style="margin: auto; width: 100%;">Delete</button></td>
+                    <td><input type="hidden" id="delContactId" name="delContactId" value=<%= contact._id %>></td>
+                </form>
+                <form action="update" method="post">
+                    <td><button class="btn" style="margin: auto; width: 100%;">Update</button></td>
+                    <td><input type="hidden" id="contactId" name="contactId" value=<%= contact._id %>></td>
+                </form>
+               
+            </tr>
+        <% }); %>
+    </table>
+    <form action = "mailer" method = "post" name="myForm">
+        <button type="submit" class="btn btn-default" style="margin-top: 20px;">Enter Another Contact</button>
+    </form>
+    </div>
+
+    <div class="container">
+    <div class="page-header">
+        <h1>Map Of Contacts</h1>
+    </div>
+    <div id="map" style="margin-left: 30px; border: solid black 3px;"><div></div>
+    </div>
+    <script src="https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js"></script>
+    <script>
+        L.mapbox.accessToken = "pk.eyJ1IjoidGhvb3A5MSIsImEiOiJjazNleW43ZHEwMGxtM2NxYW9hbXUwczNjIn0.gA0hAC9xLw65n5oWsuRykA";      
+        const map = L.mapbox.map('map', 'examples.map-h67hf2ic');
+
+        $(document).ready ( function() {
+            var tab = $('#contactTable');
+            //var rows = $(tab).find('> tbody > tr');
+            var addresses = [];
+            $('#contactTable td.address').each(function() {
+                var cellText = $(this).html();
+                addresses.push(cellText);
+            });
+            
+            console.log(addresses);
+
+            const print_location = (err, data) => {
+                if (err ) return console.error('ugh...');
+                if (data.latlng){
+                    console.log(data.latlng);
+                    var mar = L.marker([data.latlng[0], data.latlng[1]], marker).addTo(map);
+                    mar.lat = data.latlng[0];
+                    mar.lng = data.latlng[1];
+
+                    mar.on("click", function (event) {
+                        map.setView([mar.lat, mar.lng]);
+                    });
+                } 
+                else console.log('Place couldn’t be located');
+            }
+
+            const center_location = (err, data) => {
+                if (err ) return console.error('ugh...');
+                if (data.latlng){
+                    map.setView([data.latlng[0], data.latlng[1]]);
+                } 
+                else console.log('Place couldn’t be located');
+            }
+
+            
+            const geocoder = L.mapbox.geocoder('mapbox.places')
+
+            const marker = {
+                icon: L.mapbox.marker.icon({
+                        'marker-size': 'large',
+                        'marker-color': '#fa0'
+                    }),
+                clickable: true,
+            };
+            addresses.forEach(function(address) {
+                console.log(address);
+                geocoder.query(address, print_location);
+            });
+            
+            
+            $('button').click( function() {
+                console.log("Here");
+            });
+
+
+
+            $('.deleteButton').click( function() {
+                //console.log("Bro");
+                var id = $(this).closest('td').siblings().find('input').val();
+                console.log(id);
+                //console.log(contact);
+            });
+
+            $('.updateButton').click( function() {
+                //console.log("My dude");
+                var id = $(this).closest('td').siblings().find('input').val();
+                console.log(id);
+                //console.log(contact);
+            });
+            
+
+            $('body').on('click', '#contactTable tr td.address', function(){
+                var cellText = $(this).html();
+                //var cellText = $(this).html();
+                console.log(cellText);
+                geocoder.query(cellText, center_location);
+                
+            });
+
+        });
+    </script>
+    
+</body>
+</html>
